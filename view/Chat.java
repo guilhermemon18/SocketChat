@@ -6,6 +6,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.net.Socket;
 import java.time.LocalTime;
 
 import javax.swing.JButton;
@@ -33,17 +37,42 @@ public class Chat {
 	private final JLabel label1;
 	private final JTextField textField;
 	private final JButton button;
-
+	private final Socket socket;//oi
 	private final EmissorDeMensagem emissorDeMensagem;
 	private JPanel panel_1;
 	private JPanel panel_2;
 	private JButton btnLimpar;
 
-	public Chat(EmissorDeMensagem emissor, String nome) {
+	public Chat(EmissorDeMensagem emissor, String nome, Socket socket) {
 		this.nome = nome;
 		this.emissorDeMensagem = emissor;
+		this.socket = socket;
 
 		this.frame = new JFrame( nome);
+		frame.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosed(WindowEvent e) {
+				System.out.println("Entrou janela fechando!");
+				LocalTime agora = LocalTime.now();
+				emissorDeMensagem.envia( agora + ";" + "Desconectado" + ";" + nome);
+				textField.setText("");
+			}
+			@Override
+			public void windowClosing(WindowEvent e) {
+				System.out.println("Entrou janela fechando!");
+				LocalTime agora = LocalTime.now();
+				emissorDeMensagem.envia( agora + ";" + "Desconectado" + ";" + nome);
+				textField.setText("");
+				try {
+					Chat.this.socket.close();
+					
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					System.out.println("Erro ao desconectar cliente!");
+					e1.printStackTrace();
+				}
+			}
+		});
 		this.panel = new JPanel();
 		this.textArea1 = new JTextArea(10, 60);
 		this.textArea1.setEditable(false);

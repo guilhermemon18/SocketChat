@@ -10,10 +10,12 @@ public class Server {
 
 		ServerSocket serverSocket = new ServerSocket(10000);
 
+		//O registrador ele já tem o serversocket lá nele,então dá para acessar por lá.
 		Registrador registrador = new Registrador(distribuidor, serverSocket);
 		Thread pilha = new Thread(registrador);
 		pilha.start();
 		System.out.println("Criou o server!");
+		System.out.println("Servidor ouvindo a porta 10000");
 	}
 
 }
